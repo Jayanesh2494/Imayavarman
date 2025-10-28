@@ -1,0 +1,38 @@
+import { Tabs } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAuth } from '../../contexts/AuthContext';
+import { IconButton } from 'react-native-paper';
+
+export default function StudentLayout() {
+  const { signOut } = useAuth();
+
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: '#FF6B35',
+        tabBarInactiveTintColor: '#666',
+        headerRight: () => <IconButton icon="logout" onPress={signOut} />,
+      }}
+    >
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="attendance"
+        options={{
+          title: 'Attendance',
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="calendar-check" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}

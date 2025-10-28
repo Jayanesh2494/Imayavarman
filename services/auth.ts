@@ -1,0 +1,55 @@
+import api from './api';
+import { storage } from './storage';
+import { AuthResponse, LoginCredentials, RegisterData } from '../types/user';
+
+export const authService = {
+  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    try {
+      const response = await api.post<any, AuthResponse>('/auth/login', credentials);
+      
+      // Save token and user data
+      await storage.saveToken(response.token);
+      await storage.saveUser(response.user);
+      
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async register(data: RegisterData): Promise<AuthResponse> {
+    try {
+      const response = await api.post<any, AuthResponse>('/auth/register', data);
+      
+      // Save token and user data
+      await storage.saveToken(response.token);
+      await storage.saveUser(response.user);
+      
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await storage.clearAll();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  },
+
+  async getCurrentUser() {
+    try {
+      return await storage.getUser();
+    } catch (error) {
+      console.error('Get current user error:', error);
+      return null;
+    }
+  },
+
+  async isAuthenticated(): Promise<boolean> {
+    const token = await storage.getToken();
+    return !!token;
+  },
+};
