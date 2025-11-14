@@ -18,11 +18,11 @@ export const theme = {
     backgroundSecondary: '#F8F8F8',
     backgroundDark: '#F0F0F0',
     
-    // Text
+    // Text - UPDATED TO BLACK
     text: '#212121',
-    textSecondary: '#666666',
-    textLight: '#999999',
-    textWhite: '#FFFFFF',
+    textSecondary: '#1d1c1cff',  // Changed from #666666 to darker
+    textLight: '#161515ff',       // Changed from #999999 to darker
+    textWhite: '#060606ff',
     
     // Status Colors
     success: '#4CAF50',

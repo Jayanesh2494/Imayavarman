@@ -1,79 +1,39 @@
 import api from './api';
-import { Event, CreateEventData } from '../types/event';
+import { Event } from '../types/event';
 
 export const eventService = {
   async getAll(): Promise<Event[]> {
-    try {
-      return await api.get('/events');
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get('/events');
+    // Handle both formats: direct array or { data: [] }
+    return Array.isArray(response.data) ? response.data : (response.data.data || []);
   },
 
   async getById(id: string): Promise<Event> {
-    try {
-      return await api.get(`/events/${id}`);
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get(`/events/${id}`);
+    return response.data.data || response.data;
   },
 
-  async create(data: CreateEventData): Promise<Event> {
-    try {
-      return await api.post('/events', data);
-    } catch (error) {
-      throw error;
-    }
+  async create(data: Partial<Event>): Promise<Event> {
+    const response = await api.post('/events', data);
+    return response.data.data || response.data;
   },
 
   async update(id: string, data: Partial<Event>): Promise<Event> {
-    try {
-      return await api.put(`/events/${id}`, data);
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.put(`/events/${id}`, data);
+    return response.data.data || response.data;
   },
 
   async delete(id: string): Promise<void> {
-    try {
-      return await api.delete(`/events/${id}`);
-    } catch (error) {
-      throw error;
-    }
+    await api.delete(`/events/${id}`);
   },
 
   async getUpcoming(): Promise<Event[]> {
-    try {
-      return await api.get('/events/upcoming');
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get('/events/upcoming');
+    return Array.isArray(response.data) ? response.data : (response.data.data || []);
   },
 
   async getPast(): Promise<Event[]> {
-    try {
-      return await api.get('/events/past');
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  async getByCategory(category: string): Promise<Event[]> {
-    try {
-      return await api.get(`/events/category/${category}`);
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  async uploadImage(eventId: string, imageBase64: string): Promise<string> {
-    try {
-      const response = await api.post(`/events/${eventId}/upload-image`, {
-        image: imageBase64,
-      });
-      return response.imageUrl;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get('/events/past');
+    return Array.isArray(response.data) ? response.data : (response.data.data || []);
   },
 };
