@@ -1,62 +1,97 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
-import { Text, Button as PaperButton } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { Text, SegmentedButtons } from 'react-native-paper';
 import { useRouter } from 'expo-router';
-import { FaceCapture } from '../../../components/FaceCapture';
-import { attendanceService } from '../../../services/attendance';
+import { Button } from '../../../components/ui/Button';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function MarkAttendanceScreen() {
-  const [loading, setLoading] = useState(false);
+export default function AttendanceMainScreen() {
+  const [method, setMethod] = useState<'face' | 'manual'>('face');
   const router = useRouter();
 
-  const handleCapture = async (imageBase64: string) => {
-    setLoading(true);
-    try {
-      const result = await attendanceService.markByFace(imageBase64);
-      
-      Alert.alert(
-        'Success',
-        result.message || 'Attendance marked successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Optionally navigate to history
-            },
-          },
-        ]
-      );
-    } catch (error: any) {
-      Alert.alert(
-        'Recognition Failed',
-        error.message || 'Face not recognized. Please try again.'
-      );
-    } finally {
-      setLoading(false);
+  const handleProceed = () => {
+    if (method === 'face') {
+      router.push('/(admin)/attendance/face');
+    } else {
+      router.push('/(admin)/attendance/manual');
     }
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="titleLarge" style={styles.title}>
+      <View style={styles.content}>
+        <MaterialCommunityIcons 
+          name="checkbox-marked-circle-outline" 
+          size={80} 
+          color="#FF6B35" 
+          style={styles.icon}
+        />
+        
+        <Text variant="headlineMedium" style={styles.title}>
           Mark Attendance
         </Text>
-        <Text variant="bodyMedium" style={styles.subtitle}>
-          Position the student's face in the frame
+        
+        <Text variant="bodyLarge" style={styles.subtitle}>
+          Choose your preferred method
         </Text>
-      </View>
 
-      <FaceCapture onCapture={handleCapture} loading={loading} />
+        <SegmentedButtons
+          value={method}
+          onValueChange={(value) => setMethod(value as 'face' | 'manual')}
+          buttons={[
+            {
+              value: 'face',
+              label: 'Face Recognition',
+              icon: 'face-recognition',
+            },
+            {
+              value: 'manual',
+              label: 'Manual Entry',
+              icon: 'checkbox-marked',
+            },
+          ]}
+          style={styles.segmented}
+        />
 
-      <View style={styles.footer}>
-        <PaperButton
-          mode="outlined"
+        <View style={styles.description}>
+          {method === 'face' ? (
+            <>
+              <Text variant="bodyMedium" style={styles.descText}>
+                • Quick and automated
+              </Text>
+              <Text variant="bodyMedium" style={styles.descText}>
+                • Uses camera for recognition
+              </Text>
+              <Text variant="bodyMedium" style={styles.descText}>
+                • One student at a time
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text variant="bodyMedium" style={styles.descText}>
+                • Mark multiple students at once
+              </Text>
+              <Text variant="bodyMedium" style={styles.descText}>
+                • Checkbox-based interface
+              </Text>
+              <Text variant="bodyMedium" style={styles.descText}>
+                • Present, Absent, or Late status
+              </Text>
+            </>
+          )}
+        </View>
+
+        <Button onPress={handleProceed} style={styles.button}>
+          Proceed with {method === 'face' ? 'Face Recognition' : 'Manual Entry'}
+        </Button>
+
+        <Button 
+          mode="outlined" 
           onPress={() => router.push('/(admin)/attendance/history')}
-          style={styles.historyButton}
+          style={styles.button}
         >
           View History
-        </PaperButton>
+        </Button>
       </View>
     </View>
   );
@@ -65,28 +100,41 @@ export default function MarkAttendanceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
-  },
-  header: {
-    padding: 16,
     backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+  },
+  icon: {
+    alignSelf: 'center',
+    marginBottom: 20,
   },
   title: {
     textAlign: 'center',
     fontWeight: 'bold',
+    marginBottom: 8,
   },
   subtitle: {
     textAlign: 'center',
-    marginTop: 4,
+    color: '#666',
+    marginBottom: 30,
+  },
+  segmented: {
+    marginBottom: 20,
+  },
+  description: {
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  descText: {
+    marginBottom: 8,
     color: '#666',
   },
-  footer: {
-    position: 'absolute',
-    bottom: 100,
-    left: 20,
-    right: 20,
-  },
-  historyButton: {
-    backgroundColor: '#fff',
+  button: {
+    marginBottom: 12,
   },
 });

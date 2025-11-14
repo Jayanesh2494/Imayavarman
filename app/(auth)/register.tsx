@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Text, SegmentedButtons } from 'react-native-paper';
+import { Text, IconButton } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { Input } from '../../components/ui/Input';
@@ -20,7 +20,6 @@ export default function RegisterScreen() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'student' as 'student' | 'parent',
   });
   const [errors, setErrors] = useState<any>({});
   const [loading, setLoading] = useState(false);
@@ -67,7 +66,7 @@ export default function RegisterScreen() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        role: formData.role,
+        role: 'student', // Always student
       });
       // Navigation is handled by AuthContext
     } catch (error: any) {
@@ -89,6 +88,13 @@ export default function RegisterScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      <IconButton
+        icon="arrow-left"
+        size={24}
+        onPress={() => router.back()}
+        style={styles.backButton}
+      />
+
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
@@ -103,29 +109,6 @@ export default function RegisterScreen() {
         </View>
 
         <View style={styles.form}>
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Account Type
-          </Text>
-          <SegmentedButtons
-            value={formData.role}
-            onValueChange={(value) =>
-              setFormData({ ...formData, role: value as 'student' | 'parent' })
-            }
-            buttons={[
-              {
-                value: 'student',
-                label: 'Student',
-                icon: 'account',
-              },
-              {
-                value: 'parent',
-                label: 'Parent',
-                icon: 'account-supervisor',
-              },
-            ]}
-            style={styles.segmentedButtons}
-          />
-
           <Input
             label="Username *"
             value={formData.username}
@@ -169,7 +152,7 @@ export default function RegisterScreen() {
 
           <Button
             mode="text"
-            onPress={() => router.back()}
+            onPress={() => router.push('/(auth)/login')}
             disabled={loading}
             style={styles.button}
           >
@@ -192,12 +175,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 10,
+    zIndex: 1,
+  },
   scrollContainer: {
     flexGrow: 1,
     padding: 20,
+    paddingTop: 60,
   },
   header: {
-    marginTop: 40,
     marginBottom: 30,
     alignItems: 'center',
   },
@@ -210,13 +199,6 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   form: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    marginBottom: 12,
-    fontWeight: '600',
-  },
-  segmentedButtons: {
     marginBottom: 20,
   },
   button: {

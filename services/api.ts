@@ -26,14 +26,45 @@ api.interceptors.request.use(
 
 // Response interceptor - Handle errors globally
 api.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    // Return just the data portion
+    return response.data;
+  },
   async (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid - clear storage
-      await storage.clearAll();
+    const originalRequest = error.config;
+
+    // Handle 401 Unauthorized
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // Try to refresh token
+        const response = await axios.post(`${Config.API_URL}/auth/refresh`, {}, {
+          headers: {
+            Authorization: `Bearer ${await storage.getToken()}`,
+          },
+        });
+
+        const newToken = response.data.token;
+        await storage.saveToken(newToken);
+
+        // Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return axios(originalRequest);
+      } catch (refreshError) {
+        // Refresh failed - clear storage and redirect to login
+        await storage.clearAll();
+        // The AuthContext will handle redirect
+        return Promise.reject(refreshError);
+      }
     }
-    
-    const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
+
+    // Handle other errors
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error ||
+                        error.message || 
+                        'An error occurred';
+
     return Promise.reject(new Error(errorMessage));
   }
 );

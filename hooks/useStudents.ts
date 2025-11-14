@@ -2,37 +2,33 @@ import { useState, useEffect } from 'react';
 import { studentService } from '../services/students';
 import { Student } from '../types/student';
 
-export const useStudents = () => {
+export function useStudents() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadStudents = async () => {
+  const fetchStudents = async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await studentService.getAll();
       setStudents(data);
     } catch (err: any) {
-      setError(err.message || 'Failed to load students');
-      console.error('Load students error:', err);
+      setError(err.message || 'Failed to fetch students');
+      console.error('Error fetching students:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadStudents();
+    fetchStudents();
   }, []);
-
-  const refetch = () => {
-    loadStudents();
-  };
 
   return {
     students,
     loading,
     error,
-    refetch,
+    refetch: fetchStudents,
   };
-};
+}

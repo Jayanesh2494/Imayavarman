@@ -62,4 +62,12 @@ export const studentService = {
       throw error;
     }
   },
+
+  async getActiveStudents(): Promise<Student[]> {
+    try {
+      return await api.get('/students?status=active');
+    } catch (error) {
+      throw error;
+    }
+  },
 };

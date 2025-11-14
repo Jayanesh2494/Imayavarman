@@ -1,21 +1,20 @@
 import React from 'react';
-import { Card as PaperCard } from 'react-native-paper';
 import { StyleSheet, ViewStyle } from 'react-native';
+import { Card as PaperCard } from 'react-native-paper';
+import { theme } from '../../constants/theme';
 
 interface CardProps {
   children: React.ReactNode;
   onPress?: () => void;
   style?: ViewStyle;
-  elevation?: number;
 }
 
-export function Card({ children, onPress, style, elevation = 2 }: CardProps) {
+export function Card({ children, onPress, style }: CardProps) {
   return (
     <PaperCard
-      style={[styles.card, style]}
-      elevation={elevation}
       onPress={onPress}
-      mode="elevated"
+      style={[styles.card, style]}
+      elevation={2}
     >
       <PaperCard.Content>{children}</PaperCard.Content>
     </PaperCard>
@@ -24,9 +23,8 @@ export function Card({ children, onPress, style, elevation = 2 }: CardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 12,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.secondary,
+    borderRadius: theme.borderRadius.lg,
+    ...theme.shadows.medium,
   },
 });

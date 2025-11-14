@@ -18,7 +18,11 @@ export const feeService = {
     }
   },
 
-  async recordPayment(feeId: string, paymentData: any): Promise<Fee> {
+  async recordPayment(feeId: string, paymentData: {
+    paymentMethod: string;
+    transactionId?: string;
+    paidDate?: string;
+  }): Promise<Fee> {
     try {
       return await api.post(`/fees/${feeId}/payment`, paymentData);
     } catch (error) {
@@ -45,6 +49,35 @@ export const feeService = {
   async getOverdue(): Promise<Fee[]> {
     try {
       return await api.get('/fees/overdue');
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async update(feeId: string, data: Partial<Fee>): Promise<Fee> {
+    try {
+      return await api.patch(`/fees/${feeId}`, data);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async delete(feeId: string): Promise<void> {
+    try {
+      return await api.delete(`/fees/${feeId}`);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async getStats(): Promise<{
+    totalPending: number;
+    totalOverdue: number;
+    totalCollected: number;
+    monthlyRevenue: number;
+  }> {
+    try {
+      return await api.get('/fees/stats');
     } catch (error) {
       throw error;
     }

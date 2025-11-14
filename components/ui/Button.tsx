@@ -1,15 +1,17 @@
 import React from 'react';
+import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { Button as PaperButton } from 'react-native-paper';
-import { StyleSheet } from 'react-native';
+import { theme } from '../../constants/theme';
 
 interface ButtonProps {
-  children: string;
+  children: React.ReactNode;
   onPress: () => void;
-  mode?: 'text' | 'outlined' | 'contained' | 'elevated' | 'contained-tonal';
+  mode?: 'text' | 'outlined' | 'contained';
   loading?: boolean;
   disabled?: boolean;
   icon?: string;
-  style?: any;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
 export function Button({
@@ -20,16 +22,19 @@ export function Button({
   disabled = false,
   icon,
   style,
+  textStyle,
 }: ButtonProps) {
   return (
     <PaperButton
       mode={mode}
       onPress={onPress}
       loading={loading}
-      disabled={disabled || loading}
+      disabled={disabled}
       icon={icon}
       style={[styles.button, style]}
-      contentStyle={styles.content}
+      labelStyle={[styles.label, textStyle]}
+      buttonColor={mode === 'contained' ? theme.colors.primary : undefined}
+      textColor={mode === 'contained' ? theme.colors.textWhite : theme.colors.primary}
     >
       {children}
     </PaperButton>
@@ -38,10 +43,11 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
-    marginTop: 10,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
+    paddingVertical: theme.spacing.xs,
   },
-  content: {
-    paddingVertical: 6,
+  label: {
+    fontSize: theme.typography.fontSize.base,
+    fontWeight: theme.typography.fontWeight.semibold,
   },
 });

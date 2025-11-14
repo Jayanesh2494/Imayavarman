@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, IconButton } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -12,6 +13,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ username: '', password: '' });
   const { signIn } = useAuth();
+  const router = useRouter();
 
   const validateInputs = () => {
     const newErrors = { username: '', password: '' };
@@ -55,13 +57,20 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      <IconButton
+        icon="arrow-left"
+        size={24}
+        onPress={() => router.back()}
+        style={styles.backButton}
+      />
+
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
           <Text variant="headlineLarge" style={styles.title}>
-            Silambam Training
+            Welcome Back
           </Text>
           <Text variant="titleMedium" style={styles.subtitle}>
             Sign in to continue
@@ -94,12 +103,15 @@ export default function LoginScreen() {
           <Button onPress={handleLogin} loading={loading} style={styles.button}>
             Login
           </Button>
-        </View>
 
-        <View style={styles.footer}>
-          <Text variant="bodySmall" style={styles.footerText}>
-            Version 1.0.0
-          </Text>
+          <Button
+            mode="text"
+            onPress={() => router.push('/(auth)/register')}
+            disabled={loading}
+            style={styles.button}
+          >
+            Don't have an account? Register
+          </Button>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -110,6 +122,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 10,
+    zIndex: 1,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -133,12 +151,5 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-  },
-  footer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  footerText: {
-    color: '#999',
   },
 });

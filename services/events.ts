@@ -49,4 +49,31 @@ export const eventService = {
       throw error;
     }
   },
+
+  async getPast(): Promise<Event[]> {
+    try {
+      return await api.get('/events/past');
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async getByCategory(category: string): Promise<Event[]> {
+    try {
+      return await api.get(`/events/category/${category}`);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async uploadImage(eventId: string, imageBase64: string): Promise<string> {
+    try {
+      const response = await api.post(`/events/${eventId}/upload-image`, {
+        image: imageBase64,
+      });
+      return response.imageUrl;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

@@ -33,9 +33,12 @@ export const authService = {
 
   async logout(): Promise<void> {
     try {
-      await storage.clearAll();
+      // Call backend logout endpoint if needed
+      await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      await storage.clearAll();
     }
   },
 
@@ -51,5 +54,15 @@ export const authService = {
   async isAuthenticated(): Promise<boolean> {
     const token = await storage.getToken();
     return !!token;
+  },
+
+  async refreshToken(): Promise<void> {
+    try {
+      const response = await api.post('/auth/refresh');
+      await storage.saveToken(response.token);
+    } catch (error) {
+      await storage.clearAll();
+      throw error;
+    }
   },
 };

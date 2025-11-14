@@ -1,30 +1,31 @@
 import { Stack } from 'expo-router';
 
-export default function AttendanceLayout() {
+export default function EventsLayout() {
   return (
     <Stack>
       <Stack.Screen
         name="index"
         options={{
-          title: 'Attendance',
+          title: 'Events',
         }}
       />
       <Stack.Screen
-        name="face"
+        name="create"
         options={{
-          title: 'Face Recognition',
+          title: 'Create Event',
+          presentation: 'modal',
         }}
       />
       <Stack.Screen
-        name="manual"
+        name="[id]"
         options={{
-          title: 'Manual Attendance',
+          title: 'Event Details',
         }}
       />
       <Stack.Screen
-        name="history"
+        name="edit/[id]"
         options={{
-          title: 'Attendance History',
+          title: 'Edit Event',
         }}
       />
     </Stack>

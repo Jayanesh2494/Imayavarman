@@ -3,6 +3,7 @@ export interface Event {
   title: string;
   description?: string;
   date: string;
+  time?: string;
   location?: string;
   category: 'competition' | 'workshop' | 'ceremony' | 'practice' | 'other';
   participants?: string[];
@@ -14,6 +15,8 @@ export interface CreateEventData {
   title: string;
   description?: string;
   date: string;
+  time?: string;
   location?: string;
   category: 'competition' | 'workshop' | 'ceremony' | 'practice' | 'other';
+  images?: string[];
 }

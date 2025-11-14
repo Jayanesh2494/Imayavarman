@@ -1,10 +1,16 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+
+const isWeb = Platform.OS === 'web';
 
 export const storage = {
-  // Token management
   async saveToken(token: string): Promise<void> {
     try {
-      await SecureStore.setItemAsync('userToken', token);
+      if (isWeb) {
+        localStorage.setItem('userToken', token);
+      } else {
+        await SecureStore.setItemAsync('userToken', token);
+      }
     } catch (error) {
       console.error('Error saving token:', error);
     }
@@ -12,7 +18,11 @@ export const storage = {
 
   async getToken(): Promise<string | null> {
     try {
-      return await SecureStore.getItemAsync('userToken');
+      if (isWeb) {
+        return localStorage.getItem('userToken');
+      } else {
+        return await SecureStore.getItemAsync('userToken');
+      }
     } catch (error) {
       console.error('Error getting token:', error);
       return null;
@@ -21,16 +31,24 @@ export const storage = {
 
   async removeToken(): Promise<void> {
     try {
-      await SecureStore.deleteItemAsync('userToken');
+      if (isWeb) {
+        localStorage.removeItem('userToken');
+      } else {
+        await SecureStore.deleteItemAsync('userToken');
+      }
     } catch (error) {
       console.error('Error removing token:', error);
     }
   },
 
-  // User data management
   async saveUser(user: any): Promise<void> {
     try {
-      await SecureStore.setItemAsync('userData', JSON.stringify(user));
+      const userData = JSON.stringify(user);
+      if (isWeb) {
+        localStorage.setItem('userData', userData);
+      } else {
+        await SecureStore.setItemAsync('userData', userData);
+      }
     } catch (error) {
       console.error('Error saving user:', error);
     }
@@ -38,7 +56,12 @@ export const storage = {
 
   async getUser(): Promise<any | null> {
     try {
-      const data = await SecureStore.getItemAsync('userData');
+      let data: string | null;
+      if (isWeb) {
+        data = localStorage.getItem('userData');
+      } else {
+        data = await SecureStore.getItemAsync('userData');
+      }
       return data ? JSON.parse(data) : null;
     } catch (error) {
       console.error('Error getting user:', error);
@@ -48,13 +71,16 @@ export const storage = {
 
   async removeUser(): Promise<void> {
     try {
-      await SecureStore.deleteItemAsync('userData');
+      if (isWeb) {
+        localStorage.removeItem('userData');
+      } else {
+        await SecureStore.deleteItemAsync('userData');
+      }
     } catch (error) {
       console.error('Error removing user:', error);
     }
   },
 
-  // Clear all data
   async clearAll(): Promise<void> {
     try {
       await this.removeToken();
