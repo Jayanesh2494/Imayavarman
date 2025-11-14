@@ -7,15 +7,13 @@ interface User {
   id: string;
   username: string;
   email: string;
-  role: 'admin' | 'student' | 'parent';
-  studentId?: string;
+  role: 'admin';
 }
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   signIn: (username: string, password: string) => Promise<void>;
-  signUp: (data: any) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -23,7 +21,6 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
   signIn: async () => {},
-  signUp: async () => {},
   signOut: async () => {},
 });
 
@@ -41,24 +38,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, []);
 
-  // Protect routes based on authentication
   useEffect(() => {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
     const inAdminGroup = segments[0] === '(admin)';
-    const inStudentGroup = segments[0] === '(student)';
 
     if (!user && !inAuthGroup) {
-      // Redirect to welcome if not authenticated
       router.replace('/(auth)/welcome');
-    } else if (user) {
-      // Redirect based on role
-      if (user.role === 'admin' && !inAdminGroup) {
-        router.replace('/(admin)/dashboard');
-      } else if (user.role === 'student' && !inStudentGroup) {
-        router.replace('/(student)/home');
-      }
+    } else if (user && user.role === 'admin' && !inAdminGroup) {
+      router.replace('/(admin)/dashboard');
     }
   }, [user, segments, isLoading]);
 
@@ -68,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const token = await storage.getToken();
       const userData = await storage.getUser();
 
-      if (token && userData) {
+      if (token && userData && userData.role === 'admin') {
         setUser(userData);
       } else {
         setUser(null);
@@ -84,26 +73,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (username: string, password: string) => {
     try {
       const response = await authService.login({ username, password });
-      setUser(response.user);
       
-      // Navigate based on role
-      if (response.user.role === 'admin') {
-        router.replace('/(admin)/dashboard');
-      } else {
-        router.replace('/(student)/home');
+      // Only allow admin login
+      if (response.user.role !== 'admin') {
+        throw new Error('Only administrators can access this application');
       }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const signUp = async (data: any) => {
-    try {
-      const response = await authService.register(data);
-      setUser(response.user);
       
-      // New users are students by default
-      router.replace('/(student)/home');
+      setUser(response.user);
+      router.replace('/(admin)/dashboard');
     } catch (error) {
       throw error;
     }
@@ -127,7 +104,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         isLoading,
         signIn,
-        signUp,
         signOut,
       }}
     >

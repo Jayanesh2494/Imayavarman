@@ -13,9 +13,11 @@ export default function Index() {
     return <Redirect href="/(auth)/welcome" />;
   }
 
+  // Only admin users allowed
   if (user.role === 'admin') {
     return <Redirect href="/(admin)/dashboard" />;
   }
 
-  return <Redirect href="/(student)/home" />;
+  // Fallback
+  return <Redirect href="/(auth)/welcome" />;
 }

@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { validation } from '../../utils/validation';
+import { theme } from '../../constants/theme';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -27,9 +28,6 @@ export default function LoginScreen() {
     if (!validation.required(password)) {
       newErrors.password = 'Password is required';
       isValid = false;
-    } else if (!validation.password(password)) {
-      newErrors.password = 'Password must be at least 6 characters';
-      isValid = false;
     }
 
     setErrors(newErrors);
@@ -37,14 +35,11 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    if (!validateInputs()) {
-      return;
-    }
+    if (!validateInputs()) return;
 
     setLoading(true);
     try {
       await signIn(username, password);
-      // Navigation is handled by AuthContext
     } catch (error: any) {
       Alert.alert('Login Failed', error.message || 'Invalid credentials');
     } finally {
@@ -62,18 +57,16 @@ export default function LoginScreen() {
         size={24}
         onPress={() => router.back()}
         style={styles.backButton}
+        iconColor={theme.colors.primary}
       />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Text variant="headlineLarge" style={styles.title}>
-            Welcome Back
+            Admin Login
           </Text>
           <Text variant="titleMedium" style={styles.subtitle}>
-            Sign in to continue
+            Sign in to manage your training centre
           </Text>
         </View>
 
@@ -103,16 +96,11 @@ export default function LoginScreen() {
           <Button onPress={handleLogin} loading={loading} style={styles.button}>
             Login
           </Button>
-
-          <Button
-            mode="text"
-            onPress={() => router.push('/(auth)/register')}
-            disabled={loading}
-            style={styles.button}
-          >
-            Don't have an account? Register
-          </Button>
         </View>
+
+        <Text variant="bodySmall" style={styles.helpText}>
+          Contact Master Manikandan for account access
+        </Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -121,7 +109,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.background,
   },
   backButton: {
     position: 'absolute',
@@ -132,24 +120,30 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: theme.spacing.lg,
   },
   header: {
-    marginBottom: 40,
+    marginBottom: theme.spacing.xxl,
     alignItems: 'center',
   },
   title: {
-    fontWeight: 'bold',
-    color: '#FF6B35',
-    marginBottom: 8,
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.primary,
+    marginBottom: theme.spacing.sm,
   },
   subtitle: {
-    color: '#666',
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
   },
   form: {
-    marginBottom: 20,
+    marginBottom: theme.spacing.lg,
   },
   button: {
-    marginTop: 10,
+    marginTop: theme.spacing.md,
+  },
+  helpText: {
+    color: theme.colors.textLight,
+    textAlign: 'center',
+    marginTop: theme.spacing.lg,
   },
 });

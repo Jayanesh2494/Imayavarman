@@ -32,25 +32,21 @@ export default function WelcomeScreen() {
           </Text>
         </View>
 
-        {/* Buttons */}
+        {/* Login Button Only */}
         <View style={styles.buttonContainer}>
           <Button
             onPress={() => router.push('/(auth)/login')}
             icon="login"
             style={styles.loginButton}
           >
-            Login
-          </Button>
-
-          <Button
-            mode="outlined"
-            onPress={() => router.push('/(auth)/register')}
-            icon="account-plus"
-            style={styles.registerButton}
-          >
-            Register
+            Admin Login
           </Button>
         </View>
+
+        {/* Info Text */}
+        <Text variant="bodySmall" style={styles.infoText}>
+          For student accounts, please contact your administrator
+        </Text>
       </View>
 
       {/* Footer */}
@@ -113,10 +109,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
     ...theme.shadows.medium,
   },
-  registerButton: {
-    marginBottom: theme.spacing.md,
-    borderColor: theme.colors.primary,
-    borderWidth: 2,
+  infoText: {
+    color: theme.colors.textLight,
+    textAlign: 'center',
+    marginTop: theme.spacing.lg,
   },
   footer: {
     alignItems: 'center',
